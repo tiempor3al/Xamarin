@@ -1,45 +1,59 @@
 ﻿using System;
 using Xamarin.Forms;
+using System.Net.Http;
 
 namespace Actividad6
 {
 	public class App
 	{
-		public static Page GetMainPage ()
+		//Ahora regresamos una pagina de tipo NavigationPage para navegar entre pantallas
+		public static NavigationPage GetMainPage ()
 		{	
-			Label texto = new Label {
-				Text = "texto va a cambiar",
-				TextColor = Color.Blue
+			//Creamos un boton con fondo verde y texto blanco
+			Button btnLogin = new Button {
+				Text = "Login",
+				TextColor = Color.White,
+				BackgroundColor = Color.FromHex ("77D065")
 			};
 
-			Button boton = new Button
-			{
-				Text = "Click para cambiar el texto"
-			};
-
-			boton.Clicked += (sender, e) => {
-				texto.Text = "haz hecho click en el botón";
-			};
-
-			//Stacklayout permite apilar los controles verticalmente
-			StackLayout stackLayout = new StackLayout
-			{
-				Children =
-				{
-					texto,
-					boton
+			ContentPage contentPage = new ContentPage();
+			//Stacklayout permite agregar controles verticalmente
+			//Por el momento solo tenemos un control que es el boton
+			contentPage.Content = new StackLayout {
+				//Espacio alrededor de los controles
+				Padding = 10,
+				//Centramos el boton al centro
+				VerticalOptions = LayoutOptions.Center,
+				//Agregamos el boton
+				Children = {
+					btnLogin
 				}
 			};
 
-			ContentPage contentPage = new ContentPage ();
-			contentPage.Content = stackLayout;
+			//Cuando se de click al boton, se ejecuta la llamada remota al servidor
+			//Async indica que la llamada se hace de manera asyncrona. 
+			//Si se hiciera de manera sincrona, se bloquearia el hilo de ejecucion actual
+			//y se notaria un efecto de pantalla "pasmada".
+			btnLogin.Clicked += async (object sender, EventArgs e) => {
+				//Creamos un nuevo objeto para hacer la llamada remota
+				var client = new HttpClient();
 
-			//Padding agrega un margen al contenido
-			//Device.OnPlatform permite modificar este margen dependiendo de la plataforma IOS, Android y Windows Phone
-			//Para saber más sobe Device.OnPlatform revisa 
-			contentPage.Padding = new Thickness (5, Device.OnPlatform (20, 5, 5), 5, 5);
+				//Esta es la llamada al servidor. GetStringAsync nos devuelve una cadena con la respuesta del servidor.
+				//Como este es un servidor de pruebas, no tiene un dominio, solo una ip.
+				var response = await client.GetStringAsync("http://212.47.237.211");
 
-			return contentPage;
+				//Imprimimos en pantalla la respuesta del servidor
+				//Los parametros son: titulo, mensaje, y el texto de los botones. En este caso solo tenemos un boton OK.
+				await contentPage.DisplayAlert("Respuesta del servidor",response, "OK");
+
+				var todoPage = new NewPage(); // so the new page shows correct data
+				await contentPage.Navigation.PushAsync(todoPage);
+
+			};
+
+			//Aqui regresamos un NavigationPage
+			//Para ver los tipos que se pueden crear, https://developer.xamarin.com/guides/xamarin-forms/controls/pages/
+			return new NavigationPage(contentPage);
 		}
 	}
 }
