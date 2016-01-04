@@ -7,20 +7,16 @@ namespace Actividad8
 	{
 		public Login ()
 		{
-			Entry usuario = new Entry { Placeholder = "Usuario" };
-			Entry clave = new Entry { Placeholder = "Clave", IsPassword = true };
+			//El objeto Uri es el que contiene la dirección web
+			var uri = new Uri("http://img05.deviantart.net/8f6d/i/2016/004/0/9/004___yellow_by_mei_xing-d9mpjad.jpg");
 
-			Button boton = new Button {
-				Text = "Login",
-				TextColor = Color.White,
-				BackgroundColor = Color.FromHex ("77D065") 
-			};
+			//Creamos un imagen que se adapte a su tamaño
+			var image = new Image { Aspect = Aspect.AspectFit };
 
-			boton.Clicked += (sender, e) => {
+			//Le indicamos a la imagen de donde tiene que cargarse
+			image.Source = ImageSource.FromUri(uri);
 
-			};
 
-			//Stacklayout permite apilar los controles verticalmente
 			StackLayout stackLayout = new StackLayout
 			{
 				Spacing = 20, 
@@ -28,14 +24,14 @@ namespace Actividad8
 				VerticalOptions = LayoutOptions.Center,
 				Children =
 				{
-					usuario,
-					clave,
-					boton
+					image
 				}
 			};
 
-			//Como esta clase hereda de ContentPage, podemos usar estas propiedades directamente
+
 			this.Content = stackLayout;
+			//Device.OnPlatform permite modificar el propiedades segun la plataforma. En este caso iOS
+			//Ver https://developer.xamarin.com/guides/xamarin-forms/working-with/platform-specifics/
 			this.Padding = new Thickness (5, Device.OnPlatform (20, 5, 5), 5, 5);
 		}
 	}
